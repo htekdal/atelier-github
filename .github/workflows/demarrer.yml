@@ -1,0 +1,23 @@
+# Mission 0 : crée les labels et les 12 missions sous forme d'issues.
+# Se lance à la main : onglet Actions › Démarrer l'atelier › Run workflow.
+name: Démarrer l'atelier
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  creer-missions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Créer les labels et les missions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python atelier/demarrer.py
