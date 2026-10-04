@@ -5,7 +5,7 @@ from decimal import Decimal, ROUND_HALF_UP
 def solde_courant(operations, solde_initial=Decimal("0")):
     """Solde après application de toutes les opérations."""
     total = solde_initial + sum((op.montant for op in operations), Decimal("0"))
-    solde = total.quantize(Decimal("0.01"))
+    solde = total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     return solde
 
 
