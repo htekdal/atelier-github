@@ -3,6 +3,7 @@ import sys
 from decimal import Decimal
 
 from tresorerie.import_csv import lire_releve
+from tresorerie.rapport import rapport_mensuel
 from tresorerie.soldes import formater_montant, solde_courant
 
 RELEVE = "data/exemple_releve.csv"
@@ -20,6 +21,8 @@ def main(args):
     commande = args[0] if args else "resume"
     if commande == "resume":
         resume(operations)
+    elif commande == "rapport":
+        print(rapport_mensuel(operations))
     else:
         print(f"Commande inconnue : {commande}")
         return 1
