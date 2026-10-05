@@ -1,12 +1,9 @@
-"""Catégorisation des opérations.
-
-Version simple à base de mots-clés. Dans la vraie appli, c'est l'IA qui s'en charge.
-"""
+"""Catégorisation des opérations par mots-clés."""
 
 REGLES = {
     "Logement": ["LOYER", "EDF", "ASSURANCE HABITATION"],
-    "Courses": ["CARREFOUR", "MONOPRIX", "LIDL", "BOULANGERIE"],
-    "Transport": ["NAVIGO", "SNCF"],
+    "Courses": ["CARREFOUR", "MONOPRIX"],
+    "Transport": ["NAVIGO"],
     "Abonnements": ["FREE MOBILE"],
     "Loisirs": ["CINEMA"],
 }
