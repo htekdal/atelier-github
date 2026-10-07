@@ -11,6 +11,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import github_api as gh
+import tableau
 
 RACINE = Path(__file__).resolve().parent.parent
 PROPRIETAIRE = gh.REPO.split("/")[0]
@@ -60,6 +61,21 @@ def prs_de(branche):
 
 def toutes_les_prs():
     return gh.get_tout(gh.repo("/pulls"), {"state": "all"})
+
+
+def annulee(pr, toutes):
+    """Vrai si une PR « Revert » de cette PR a été fusionnée."""
+    return any(p["merged_at"] and p["title"].startswith("Revert") and pr["title"] in p["title"] for p in toutes)
+
+
+def pas_fusionnee_ou_annulee(prs, c):
+    toutes = toutes_les_prs()
+    for p in prs:
+        if p["merged_at"]:
+            if not annulee(p, toutes):
+                return False
+            c.note(f"La PR #{p['number']} a été fusionnée puis annulée avec Revert : c'est accepté, et c'était le bon réflexe.")
+    return True
 
 
 def commentaires_relecture(numero):
@@ -170,8 +186,8 @@ def m05(c):
     prs = prs_de("ia/prevision-90j")
     c.verifie(prs, "Une pull request existe pour `ia/prevision-90j`",
               "Pull requests › New pull request › compare: ia/prevision-90j.")
-    c.verifie(prs and not any(p["merged_at"] for p in prs), "La pull request n'a pas été fusionnée",
-              "Une PR au check rouge ne se fusionne pas. Si c'est déjà fait, la mission 9 t'apprendra à annuler.")
+    c.verifie(prs and pas_fusionnee_ou_annulee(prs, c), "La pull request n'a pas été fusionnée",
+              "Une PR au check rouge ne se fusionne pas. Si c'est déjà fait, annule-la avec le bouton Revert de la PR fusionnée (voir mission 9).")
     commentaires = sum(len(commentaires_conversation(p["number"])) + len(commentaires_relecture(p["number"])) for p in prs)
     c.verifie(commentaires >= 1, "Un commentaire sur la PR décrit le problème",
               "Onglet Conversation de la PR : écris quel test échoue, ce qu'il attendait et ce qu'il a obtenu.")
@@ -184,8 +200,9 @@ def m06(c):
     rep = reponses()
     prs = prs_de("ia/connexion-banque")
     c.verifie(prs, "Une pull request existe pour `ia/connexion-banque`", "Ouvre-la pour inspecter ses fichiers.")
-    c.verifie(prs and all(p["state"] == "closed" and not p["merged_at"] for p in prs),
-              "La pull request est fermée sans être fusionnée", "Bouton Close pull request, en bas de la conversation.")
+    c.verifie(prs and all(p["state"] == "closed" for p in prs) and pas_fusionnee_ou_annulee(prs, c),
+              "La pull request est fermée sans être fusionnée",
+              "Bouton Close pull request, en bas de la conversation. Si tu l'as fusionnée, annule-la avec Revert (voir mission 9).")
     lignes = [l.strip() for l in (fichier_main(".gitignore") or "").splitlines()]
     c.verifie(any(l in (".env", "/.env", "*.env", ".env*") for l in lignes),
               "`.env` est listé dans .gitignore sur main",
@@ -229,9 +246,11 @@ def m08(c):
 
 def m09(c):
     rep = reponses()
-    c.verifie(any(p["merged_at"] for p in prs_de("ia/nettoyage")), "`ia/nettoyage` a été fusionnée (pour l'exercice)",
+    nettoyage = [p for p in prs_de("ia/nettoyage") if p["merged_at"]]
+    c.verifie(nettoyage, "`ia/nettoyage` a été fusionnée (pour l'exercice)",
               "Ouvre une PR depuis ia/nettoyage et fusionne-la.")
-    c.verifie(any(p["merged_at"] and p["title"].startswith("Revert") for p in toutes_les_prs()),
+    toutes = toutes_les_prs()
+    c.verifie(any(annulee(p, toutes) for p in nettoyage),
               "Une pull request « Revert » a été fusionnée",
               "En bas de la PR ia/nettoyage fusionnée, clique sur Revert, puis fusionne la PR créée.")
     c.verifie((RACINE / "tests/test_categories.py").exists(), "`tests/test_categories.py` est de retour sur main")
@@ -319,11 +338,16 @@ def main():
         suivante = mission_suivante(numero)
         lignes.append("**Mission réussie.**" + (f" Prochaine étape : #{suivante['number']}." if suivante else " Tu as terminé l'atelier. Bravo !"))
     else:
-        lignes.append("**Pas encore.** Corrige les points marqués ❌, puis commente à nouveau `/verifier`.")
+        lignes.append("**Pas encore.** Corrige les points marqués ❌, puis commente à nouveau `/verifier`. "
+                      "Les indices et la solution complète sont dans la section « Si tu bloques » de la description.")
     gh.post(gh.repo(f"/issues/{NUMERO}/comments"), {"body": "\n".join(lignes)})
     if c.reussie:
         gh.post(gh.repo(f"/issues/{NUMERO}/labels"), {"labels": ["réussie"]})
         gh.patch(gh.repo(f"/issues/{NUMERO}"), {"state": "closed", "state_reason": "completed"})
+        try:
+            tableau.mettre_a_jour()
+        except gh.ErreurAPI as erreur:
+            print(f"Tableau de bord non mis à jour : {erreur}")
 
 
 if __name__ == "__main__":

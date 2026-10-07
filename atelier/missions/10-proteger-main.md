@@ -1,23 +1,56 @@
 titre: Mission 10 · Protéger main
 labels: mission, palier-4
 ---
+> **Objectif** : rendre impossible toute fusion sans PR et sans tests verts.
+> **Durée** : 15 minutes · **À lire avant** : carnet, section « Actions et sécurité », réglages à activer
+
 ## Pourquoi
 
 Avec une IA qui pousse vite, il faut une règle simple : rien n'entre dans `main` sans pull request et sans tests verts. GitHub peut l'imposer à tout le monde, y compris à toi et à Claude.
 
 ## Étapes
 
-1. Onglet **Settings** › dans la colonne de gauche, **Rules** › **Rulesets** › **New ruleset** › **New branch ruleset**.
-2. **Ruleset name** : `protection-main`. **Enforcement status** : **Active**.
-3. **Target branches** › **Add target** › **Include default branch**.
-4. Coche **Require a pull request before merging**. Laisse le nombre d'approbations requises à 0 : tu travailles seul et tu ne peux pas approuver tes propres PR.
-5. Coche **Require status checks to pass** › **Add checks** › choisis `pytest`.
-6. Vérifie que **Block force pushes** est coché. Clique sur **Create**.
-7. Test : essaie de modifier `README.md` directement sur `main` depuis le navigateur. GitHub t'oblige à passer par une branche.
+- [ ] **1. Ouvrir les réglages.** Onglet **Settings** du dépôt (tout à droite des onglets). Colonne de gauche : **Rules** › **Rulesets**.
+- [ ] **2. Créer un ruleset.** **New ruleset** › **New branch ruleset**.
+- [ ] **3. Le nommer et l'activer.** Ruleset name : `protection-main`. Enforcement status : passe de **Disabled** à **Active**.
+- [ ] **4. Cibler main.** Section **Target branches** › **Add target** › **Include default branch**.
+- [ ] **5. Exiger une PR.** Coche **Require a pull request before merging**. Laisse « Required approvals » à 0 : tu travailles seul et tu ne peux pas approuver tes propres PR.
+- [ ] **6. Exiger les tests.** Coche **Require status checks to pass** › **Add checks** › tape `pytest` › sélectionne-le.
+- [ ] **7. Bloquer les écrasements.** Vérifie que **Block force pushes** est coché.
+- [ ] **8. Enregistrer.** Bouton **Create** tout en bas.
+- [ ] **9. Tester.** Ouvre `README.md` sur main › crayon › modifie un mot › Commit changes... : l'option « Commit directly to the main branch » est maintenant refusée. Annule.
+- [ ] **10. Valider.** Commente `/verifier` sur cette issue.
 
-## Valider
+## Si tu bloques
 
-Commente `/verifier` sur cette issue.
+<details>
+<summary>Indice 1 · Je ne vois pas l'onglet Settings</summary>
+
+Il n'apparaît que pour le propriétaire du dépôt. Vérifie que tu es connecté avec le compte qui a créé `atelier-github`. Sur un petit écran, il peut être caché dans le menu « … » à droite des onglets.
+</details>
+
+<details>
+<summary>Indice 2 · pytest n'apparaît pas dans la liste des checks</summary>
+
+GitHub propose les checks qui ont tourné récemment. Tape quand même `pytest` dans le champ : il doit apparaître. Sinon, ouvre et ferme une petite PR pour relancer un check, puis réessaie.
+</details>
+
+<details>
+<summary>Indice 3 · Le correcteur dit que rien n'est protégé</summary>
+
+Vérifie que l'Enforcement status est bien **Active** et non Disabled ou Evaluate. Le correcteur lit uniquement les rulesets : une ancienne « branch protection rule » (Settings › Branches) ne lui est pas visible.
+</details>
+
+<details>
+<summary>Solution complète</summary>
+
+Settings › Rules › Rulesets › New branch ruleset › nom `protection-main` › Active › Add target › Include default branch › Require a pull request (0 approbation) › Require status checks › pytest › Block force pushes › Create.
+</details>
+
+## Pièges fréquents
+
+- Laisser le ruleset en Disabled : il existe mais ne protège rien.
+- Exiger 1 approbation : tu bloquerais toutes tes propres PR.
 
 ## À retenir
 

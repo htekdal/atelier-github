@@ -8,11 +8,17 @@ Tu ne codes pas. Tu explores, tu rédiges les demandes, tu relis, tu décides, t
 
 1. Ouvre l'onglet **Actions**. Si GitHub demande d'activer les workflows, accepte.
 2. Dans la colonne de gauche, clique sur **Démarrer l'atelier**, puis **Run workflow** › **Run workflow**.
-3. Patiente une minute. L'onglet **Issues** contient alors 12 missions. Commence par la mission 01.
+3. Patiente une minute. L'onglet **Issues** contient alors 12 missions et un **Tableau de bord**.
+4. Ouvre le tableau de bord et épingle-le : colonne de droite › **Pin issue**. Puis commence par la mission 01.
+
+Si tu as déjà lancé « Démarrer l'atelier » avant une mise à jour de l'atelier, relance-le : les missions non commencées prennent leur nouvelle version, ta progression est conservée.
 
 ## Comment ça marche
 
-- **Chaque mission est une issue** : pourquoi elle compte, les étapes, ce qu'il faut retenir.
+- **Chaque mission est une issue** : objectif, durée, étapes à cocher, indices progressifs, solution complète, pièges fréquents et ce qu'il faut retenir.
+- **Coche les étapes directement dans l'issue.** La progression (par exemple « 3 of 8 tasks ») s'affiche dans la liste des issues.
+- **Bloqué ?** Ouvre la section « Si tu bloques » : les indices sont repliés du plus léger au plus précis, puis la solution. Essaie d'abord sans.
+- **Le tableau de bord** se coche tout seul à chaque mission validée.
 - **Quand tu as fini, commente `/verifier`** sur l'issue de la mission. Un correcteur automatique (un workflow GitHub Actions) examine l'état du dépôt et te répond en commentaire, en une minute environ. Si tout est bon, il ferme l'issue. Sinon, il te dit ce qui manque.
 - **Les branches `ia/...` simulent le travail de Claude Code.** Chacune contient une fonctionnalité en attente de relecture, avec ses qualités et ses pièges. Ne les fusionne que lorsqu'une mission te le demande.
 - Tu peux suivre le correcteur en direct dans l'onglet **Actions**.
